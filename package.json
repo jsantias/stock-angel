@@ -1,0 +1,24 @@
+{
+  "name": "share-saver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsianJohnBoi/share-saver.git"
+  },
+  "author": "John Santias",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AsianJohnBoi/share-saver/issues"
+  },
+  "homepage": "https://github.com/AsianJohnBoi/share-saver#readme",
+  "dependencies": {
+    "nodemon": "^2.0.4",
+    "puppeteer": "^5.2.1"
+  }
+}
