@@ -2,9 +2,9 @@ require('dotenv').config();
 
 const puppeteer = require('puppeteer');
 const formatData = require('./scripts/formatData');
+const getStockPrice = require('./scripts/getStockPrice');
 
-(async () => {
-
+let stocks = async () => {
     // Launch a new browser and redirect to website
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
@@ -25,9 +25,12 @@ const formatData = require('./scripts/formatData');
         tds =  tds.map(td => td.innerText);
         return tds.filter(element => element != '')
     });
+    await browser.close();
     
     // Format the data in to an array of objects
-    let stocks = await formatData(userShares);
+    return await formatData(userShares);
+};
 
-    await browser.close();
+(async () => {
+    let stockList = await stocks();
 })();

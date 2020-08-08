@@ -1,34 +1,32 @@
-// stock JSON model
-let stock = require('../models/stock.json');
-
 module.exports = (sharesArray) => {
 
     var x = 0;
     var shares = [];
+    var newStock = new Object();
 
     for (var i = 0; i < sharesArray.length; i++) {
         if (sharesArray[i] !== 'Trade') {
             switch (x) {
                 case 0:
-                    stock.code = sharesArray[i];
+                    newStock.code = sharesArray[i];
                     break;
                 case 1:
-                    stock.units = sharesArray[i];
+                    newStock.units = sharesArray[i];
                     break;
                 case 2:
-                    stock.avgPrice = sharesArray[i];
+                    newStock.avgPrice = sharesArray[i];
                     break;
                 case 3:
-                    stock.lastPrice = sharesArray[i];
+                    newStock.lastPrice = sharesArray[i];
                     break;
                 case 4:
-                    stock.value = sharesArray[i];
+                    newStock.value = sharesArray[i];
                     break;
                 case 5:
-                    stock.dayReturn = sharesArray[i];
+                    newStock.dayReturn = sharesArray[i];
                     break;
                 case 6:
-                    stock.totalReturn = sharesArray[i];
+                    newStock.totalReturn = sharesArray[i];
                     break;
                 default:
                     break;
@@ -36,7 +34,8 @@ module.exports = (sharesArray) => {
             x++;
         } else {
             x = 0;
-            shares.push(stock);
+            shares.push(newStock);
+            newStock = new Object();
         }
     }
     return shares;
