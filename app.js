@@ -3,6 +3,11 @@ require('dotenv').config();
 const puppeteer = require('puppeteer');
 const formatData = require('./scripts/formatData');
 const getStockPrice = require('./scripts/getStockPrice');
+const closePosition = require('./scripts/closePosition');
+
+// max share price difference between opening price and current price
+// threshold set for closing shares
+const LOSS_DIFF = -5;
 
 // Get user's current stocks
 let stocks = async () => {
@@ -59,7 +64,12 @@ async function checkPositions(stonkss) {
     try {
         stonkss.forEach(async element => {
             var quote = await getStockPrice(element.code);
-            console.log(quote)
+            // compare current price to previous close price
+            // close pos if difference if more than 10%
+            var difference = (((quote.c - quote.pc) / ((quote.c + quote.pc) / 2)) * 100);
+            if (difference < LOSS_DIFF) {
+                closePosition(element.code);
+            }            
         });
     } catch(error) {
         console.log(error)
