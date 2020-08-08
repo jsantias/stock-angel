@@ -1,11 +1,21 @@
 const axios = require('axios');
 
 module.exports = async (stock) => {
-    axios.get('https://finnhub.io/api/v1/quote?symbol=' + stock + '&token=' + process.env.FINNHUB_TOKEN)
+    return new Promise((resolve, reject) => {
+        axios({
+                method: 'get',
+                url: 'https://finnhub.io/api/v1/quote',
+                params: {
+                    symbol: stock,
+                    token: process.env.FINNHUB_TOKEN
+                }
+        })
         .then(function (response) {
-            return response.data;
+            resolve(response.data);
         })
         .catch(function(error) {
-            return error;
+            reject(error);
         });
+    });
+    
 }
