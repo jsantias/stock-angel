@@ -11,32 +11,36 @@ const LOSS_DIFF = -5;
 
 // Get user's current stocks
 let stocks = async () => {
-    // Launch a new browser and redirect to website
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-    await page.goto('https://stake.com.au/');
+    try {
+        // Launch a new browser and redirect to website
+        const browser = await puppeteer.launch({headless: false});
+        const page = await browser.newPage();
+        await page.goto('https://stake.com.au/');
 
-    // Log in to the website
-    await page.type("#input_9", process.env.STAKE_USER);
-    await page.type("#input_10", process.env.STAKE_PASS);
-    await page.keyboard.press("Enter")
+        // Log in to the website
+        await page.type("#input_9", process.env.STAKE_USER);
+        await page.type("#input_10", process.env.STAKE_PASS);
+        await page.keyboard.press("Enter")
 
-    await page.waitFor(5000);
-    await page.goto('http://stake.com.au/dashboard/portfolio');
+        await page.waitFor(5000);
+        await page.goto('http://stake.com.au/dashboard/portfolio');
 
-    // Get the user's shares
-    const userShares = await page.evaluate(() => {
-        var tds = Array.from(document.querySelectorAll('table tr td'))
+        // Get the user's shares
+        const userShares = await page.evaluate(() => {
+            var tds = Array.from(document.querySelectorAll('table tr td'))
 
-        tds =  tds.map(td => td.innerText);
-        return tds.filter(element => element != '')
-    });
-    await browser.close();
+            tds =  tds.map(td => td.innerText);
+            return tds.filter(element => element != '')
+        });
+        await browser.close();
 
-    console.log('User shares captured')
-    
-    // Format the data in to an array of objects
-    return await formatData(userShares);
+        console.log('User shares captured')
+        
+        // Format the data in to an array of objects
+        return await formatData(userShares);
+    } catch (e) {
+        console.log("Error occurred: ", e);
+    }
 };
 
 // captures user's stock and checks position every minute
@@ -63,6 +67,12 @@ let stocks = async () => {
 async function checkPositions(stonkss) {
     try {
         stonkss.forEach(async element => {
+            // check if scraped data indicates 5% loss
+            var checkReturn = element.dayReturn.match(/(?<=\().*(?=\%\))/);
+            if (checkReturn[1] < -5) {
+                closePosition(element.code);
+            }
+
             var quote = await getStockPrice(element.code);
             // compare current price to previous close price
             // close pos if difference if more than 10%
@@ -71,7 +81,7 @@ async function checkPositions(stonkss) {
                 closePosition(element.code);
             }            
         });
-    } catch(error) {
-        console.log(error)
+    } catch(e) {
+        console.log("Error occurred: ", e);
     }
 }
