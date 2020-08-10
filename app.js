@@ -73,7 +73,7 @@ async function checkPositions(stonkss) {
         stonkss.forEach(async element => {
             // check if scraped data indicates 5% loss
             var checkReturn = element.dayReturn.match(/(?<=\().*(?=\%\))/);
-            if (checkReturn[1] < -5) {
+            if (checkReturn[1] < LOSS_DIFF) {
                 closePosition(element.code);
             }
 
