@@ -48,19 +48,23 @@ let stocks = async () => {
     // get user's stocks
     let stockList = await stocks();
 
-    // get stock information every minute
-    setInterval(function() {
-        try {
-            var datetime = new Date();
+    if (stockList.length === 0) {
+        console.log("User has no stocks... Nothing to watch");
+    } else {
+        // get stock information every minute
+        setInterval(function() {
+            try {
+                var datetime = new Date();
 
-            if (datetime.getSeconds() == 00) {
-                checkPositions(stockList);
-            } 
-        } catch (e) {
-            console.log("Error occurred: ", e);
-        }
-        
-    }, 1000);
+                if (datetime.getSeconds() == 00) {
+                    stockList = checkPositions(stockList);
+                } 
+            } catch (e) {
+                console.log("Error occurred: ", e);
+            }
+            
+        }, 1000);
+    }
 })();
 
 // Loops through each stock and determines next best move
@@ -78,10 +82,19 @@ async function checkPositions(stonkss) {
             // close pos if difference if more than 10%
             var difference = (((quote.c - quote.pc) / ((quote.c + quote.pc) / 2)) * 100);
             if (difference < LOSS_DIFF) {
-                closePosition(element.code);
+                await closePosition(element.code);
+                // remove stock from the list
+                stonkss = stonkss.filter(function(el) {
+                    return el.code !== element.code;
+                })
             }            
         });
+        return stonkss;
     } catch(e) {
         console.log("Error occurred: ", e);
     }
+}
+
+module.exports = {
+    checkPositions
 }
